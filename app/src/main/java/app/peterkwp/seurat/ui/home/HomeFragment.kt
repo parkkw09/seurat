@@ -1,4 +1,4 @@
-package app.peterkwp.customlayout2.ui.home
+package app.peterkwp.seurat.ui.home
 
 import android.os.Bundle
 import android.util.Log
@@ -12,9 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import app.peterkwp.customlayout2.R
-import app.peterkwp.customlayout2.adapter.DefaultAdapter
-import app.peterkwp.customlayout2.dialog.CustomDialog
+import app.peterkwp.seurat.R
+import app.peterkwp.seurat.adapter.DefaultAdapter
+import app.peterkwp.seurat.dialog.CustomDialog
 
 class HomeFragment : Fragment() {
 

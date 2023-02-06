@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'app.peterkwp.customlayout2'
+    namespace 'app.peterkwp.seurat'
     compileSdk 33
 
     defaultConfig {
-        applicationId "app.peterkwp.customlayout2"
+        applicationId "app.peterkwp.seurat"
         minSdk 30
         targetSdk 33
         versionCode 1

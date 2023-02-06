@@ -1,4 +1,4 @@
-package app.peterkwp.customlayout2.ui.dashboard
+package app.peterkwp.seurat.ui.dashboard
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import app.peterkwp.customlayout2.R
+import app.peterkwp.seurat.R
 
 class DashboardFragment : Fragment() {
 

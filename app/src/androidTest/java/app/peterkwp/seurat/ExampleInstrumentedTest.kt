@@ -1,4 +1,4 @@
-package app.peterkwp.customlayout2
+package app.peterkwp.seurat
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
