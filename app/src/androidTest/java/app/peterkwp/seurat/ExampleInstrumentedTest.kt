@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("app.peterkwp.customlayout2", appContext.packageName)
+        assertEquals("app.peterkwp.seurat", appContext.packageName)
     }
 }

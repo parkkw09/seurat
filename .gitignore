@@ -17,5 +17,9 @@ local.properties
 /.idea/gradle.xml
 /.idea/misc.xml
 /.idea/vcs.xml
-/.idea/codeStyles/codeStyleConfig.xml
 /.idea/encodings.xml
+/.idea/jarRepositories.xml
+/.idea/kotlinc.xml
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/codeStyles/Project.xml
+/.idea/.name
