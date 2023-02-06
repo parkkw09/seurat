@@ -1,4 +1,4 @@
-package app.peterkwp.seurat
+package app.peterkwp.customlayout2
 
 import org.junit.Test
 
