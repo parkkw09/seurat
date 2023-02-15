@@ -10,4 +10,8 @@ class DashboardViewModel : ViewModel() {
         value = "This is dashboard Fragment"
     }
     val text: LiveData<String> = _text
+
+    fun updateStatus(status: String) {
+        _text.value = status;
+    }
 }

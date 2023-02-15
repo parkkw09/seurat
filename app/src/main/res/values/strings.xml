@@ -3,4 +3,10 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <string name="command_1">CMD1</string>
+    <string name="command_2">CMD2</string>
+    <string name="command_3">CMD3</string>
+
+    <string name="server_client_id">304816922529-a9kh6jv85o1cbhmbghrcibreocdnbi67.apps.googleusercontent.com</string>
 </resources>
