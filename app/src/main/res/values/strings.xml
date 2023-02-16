@@ -8,5 +8,6 @@
     <string name="command_2">CMD2</string>
     <string name="command_3">CMD3</string>
 
-    <string name="server_client_id">304816922529-a9kh6jv85o1cbhmbghrcibreocdnbi67.apps.googleusercontent.com</string>
+    <string name="server_client_id" translatable="false" >13440966619-2v14mi9n4qc0irjdh184d15ctjc9pur2.apps.googleusercontent.com</string>
+    <string name="googe_api_key" translatable="false" >AIzaSyB5k24Ui6hZwqF3g83cltSrKDPJZk4TB_k</string>
 </resources>

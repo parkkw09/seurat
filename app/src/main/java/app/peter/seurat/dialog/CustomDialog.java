@@ -1,4 +1,4 @@
-package app.peterkwp.seurat.dialog;
+package app.peter.seurat.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -13,7 +13,7 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
-import app.peterkwp.seurat.R;
+import app.peter.seurat.R;
 
 public class CustomDialog extends Dialog implements View.OnClickListener {
 

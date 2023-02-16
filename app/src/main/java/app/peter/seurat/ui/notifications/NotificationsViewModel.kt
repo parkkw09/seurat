@@ -1,4 +1,4 @@
-package app.peterkwp.seurat.ui.notifications
+package app.peter.seurat.ui.notifications
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

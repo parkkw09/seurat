@@ -1,9 +1,9 @@
-package app.peterkwp.seurat.adapter
+package app.peter.seurat.adapter
 
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import app.peterkwp.seurat.R
+import app.peter.seurat.R
 
 class DefaultViewHolder(private val view: View): RecyclerView.ViewHolder(view) {
 

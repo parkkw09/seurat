@@ -1,4 +1,4 @@
-package app.peterkwp.seurat.ui.home
+package app.peter.seurat.ui.home
 
 import android.os.Bundle
 import android.util.Log
@@ -9,12 +9,12 @@ import android.widget.ImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import app.peterkwp.seurat.R
-import app.peterkwp.seurat.adapter.DefaultAdapter
-import app.peterkwp.seurat.dialog.CustomDialog
+import app.peter.seurat.R
+import app.peter.seurat.adapter.DefaultAdapter
+import app.peter.seurat.dialog.CustomDialog
 
 class HomeFragment : Fragment() {
 
@@ -26,13 +26,12 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-            ViewModelProviders.of(this).get(HomeViewModel::class.java)
+        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val list: RecyclerView = root.findViewById(R.id.recycler)
         val fragmentToolbar: Toolbar = root.findViewById(R.id.toolbar)
         val image: ImageView = root.findViewById(R.id.image)
-        homeViewModel.text.observe(this, Observer {
+        homeViewModel.text.observe(viewLifecycleOwner, Observer {
             fragmentToolbar.title = it
         })
 

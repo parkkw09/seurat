@@ -1,4 +1,4 @@
-package app.peterkwp.seurat
+package app.peter.seurat
 
 import org.junit.Test
 
