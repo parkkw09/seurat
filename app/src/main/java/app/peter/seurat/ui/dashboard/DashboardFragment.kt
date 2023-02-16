@@ -101,7 +101,6 @@ class DashboardFragment : Fragment() {
         activity?.apply {
             scope.job = Job()
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestScopes(Scope(VALUE_SCOPE_YOUTUBE))
                 .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build()
@@ -130,7 +129,7 @@ class DashboardFragment : Fragment() {
         Log.d(TAG, "processCommand1()")
         scope.launch(Dispatchers.IO) {
             try {
-                val commandUrl = "https://www.googleapis.com/youtube/v3/subscriptions/list?part=id"
+                val commandUrl = "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true"
                 val token = "Bearer $accessToken"
                 val connector: HttpsURLConnection = URL(commandUrl).openConnection() as HttpsURLConnection
                 connector.apply {
