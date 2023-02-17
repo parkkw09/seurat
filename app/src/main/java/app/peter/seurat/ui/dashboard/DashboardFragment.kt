@@ -21,7 +21,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.Scope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
@@ -40,7 +39,7 @@ class DashboardFragment : Fragment() {
     private val scope = CustomScope()
 
     private var mGoogleSignInClient: GoogleSignInClient? = null
-    lateinit var credential: GoogleAccountCredential
+    private lateinit var credential: GoogleAccountCredential
 
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         Log.d(TAG, "StartActivityForResult() res[${result.resultCode}]")
@@ -127,121 +126,115 @@ class DashboardFragment : Fragment() {
 
     private fun processCommand1() {
         Log.d(TAG, "processCommand1()")
-        scope.launch(Dispatchers.IO) {
-            try {
-                val commandUrl = "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true"
-                val token = "Bearer $accessToken"
-                val connector: HttpsURLConnection = URL(commandUrl).openConnection() as HttpsURLConnection
-                connector.apply {
-                    readTimeout = 5000
-                    requestMethod = "GET"
-                    doInput = true
-                    setRequestProperty("Authorization", token)
-                    setRequestProperty("user-agent", "HttpURLConnection/1.0.0")
-                }
-                Log.d(TAG, "processCommand1() URL = [$commandUrl]")
-                Log.d(TAG, "processCommand1() header = [${connector.requestProperties}]")
-                val content = StringBuilder()
-                val resCode = connector.responseCode
-                if (resCode == HttpsURLConnection.HTTP_OK) {
-                    val reader = BufferedReader(InputStreamReader(connector.inputStream))
-                    while (true) {
-                        val data = reader.readLine() ?: break
-                        content.append(data)
-                    }
-                    reader.close()
-                    connector.disconnect()
-                } else {
-                    Log.e(TAG, "processCommand1() resCode [$resCode][${connector.responseMessage}]")
-                    connector.disconnect()
-                    throw Exception("response code[$resCode]")
-                }
-
-                Log.d(TAG, "processCommand1() response = [${content}]")
-            } catch (e: Exception) {
-                Log.e(TAG, "processCommand1() Exception [${e.localizedMessage}]")
+        try {
+            val commandUrl = "https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&mine=true"
+            val token = "Bearer $accessToken"
+            val connector: HttpsURLConnection = URL(commandUrl).openConnection() as HttpsURLConnection
+            connector.apply {
+                readTimeout = 5000
+                requestMethod = "GET"
+                doInput = true
+                setRequestProperty("Authorization", token)
+                setRequestProperty("user-agent", "HttpURLConnection/1.0.0")
             }
+            Log.d(TAG, "processCommand1() URL = [$commandUrl]")
+            Log.d(TAG, "processCommand1() header = [${connector.requestProperties}]")
+            val content = StringBuilder()
+            val resCode = connector.responseCode
+            if (resCode == HttpsURLConnection.HTTP_OK) {
+                val reader = BufferedReader(InputStreamReader(connector.inputStream))
+                while (true) {
+                    val data = reader.readLine() ?: break
+                    content.append(data)
+                }
+                reader.close()
+                connector.disconnect()
+            } else {
+                Log.e(TAG, "processCommand1() resCode [$resCode][${connector.responseMessage}]")
+                connector.disconnect()
+                throw Exception("response code[$resCode]")
+            }
+
+            Log.d(TAG, "processCommand1() response = [${content}]")
+        } catch (e: Exception) {
+            Log.e(TAG, "processCommand1() Exception [${e.localizedMessage}]")
         }
     }
 
     private fun processCommand2() {
         Log.d(TAG, "processCommand2()")
-        scope.launch(Dispatchers.IO) {
-            try {
-                val commandUrl = "https://www.googleapis.com/youtube/v3/search"
-                val token = "Bearer $accessToken"
-                val connector: HttpsURLConnection = URL(commandUrl).openConnection() as HttpsURLConnection
-                connector.apply {
-                    readTimeout = 5000
-                    requestMethod = "GET"
-                    doInput = true
-                    setRequestProperty("Authorization", token)
-                    setRequestProperty("user-agent", "HttpURLConnection/1.0.0")
-                }
-                Log.d(TAG, "processCommand2() URL = [$commandUrl]")
-                Log.d(TAG, "processCommand2() header = [${connector.requestProperties}]")
-                val content = StringBuilder()
-                val resCode = connector.responseCode
-                if (resCode == HttpsURLConnection.HTTP_OK) {
-                    val reader = BufferedReader(InputStreamReader(connector.inputStream))
-                    while (true) {
-                        val data = reader.readLine() ?: break
-                        content.append(data)
-                    }
-                    reader.close()
-                    connector.disconnect()
-                } else {
-                    Log.e(TAG, "processCommand2() resCode [$resCode][${connector.responseMessage}]")
-                    connector.disconnect()
-                    throw Exception("response code[$resCode]")
-                }
-
-                Log.d(TAG, "processCommand2() response = [${content}]")
-            } catch (e: Exception) {
-                Log.e(TAG, "processCommand2() Exception [${e.localizedMessage}]")
+        try {
+            val commandUrl = "https://www.googleapis.com/youtube/v3/search"
+            val token = "Bearer $accessToken"
+            val connector: HttpsURLConnection = URL(commandUrl).openConnection() as HttpsURLConnection
+            connector.apply {
+                readTimeout = 5000
+                requestMethod = "GET"
+                doInput = true
+                setRequestProperty("Authorization", token)
+                setRequestProperty("user-agent", "HttpURLConnection/1.0.0")
             }
+            Log.d(TAG, "processCommand2() URL = [$commandUrl]")
+            Log.d(TAG, "processCommand2() header = [${connector.requestProperties}]")
+            val content = StringBuilder()
+            val resCode = connector.responseCode
+            if (resCode == HttpsURLConnection.HTTP_OK) {
+                val reader = BufferedReader(InputStreamReader(connector.inputStream))
+                while (true) {
+                    val data = reader.readLine() ?: break
+                    content.append(data)
+                }
+                reader.close()
+                connector.disconnect()
+            } else {
+                Log.e(TAG, "processCommand2() resCode [$resCode][${connector.responseMessage}]")
+                connector.disconnect()
+                throw Exception("response code[$resCode]")
+            }
+
+            Log.d(TAG, "processCommand2() response = [${content}]")
+        } catch (e: Exception) {
+            Log.e(TAG, "processCommand2() Exception [${e.localizedMessage}]")
         }
 
     }
 
     private fun processCommand3() {
         Log.d(TAG, "processCommand3()")
-        scope.launch(Dispatchers.IO) {
-            try {
+        try {
 //                val commandUrl = "https://www.googleapis.com/youtube/v3/subscriptions/list?part=id"
-                val commandUrl = "https://www.googleapis.com/youtube/v3/search"
-                val token = "Bearer $accessToken"
-                val connector: HttpsURLConnection = URL(commandUrl).openConnection() as HttpsURLConnection
-                connector.apply {
-                    readTimeout = 5000
-                    requestMethod = "GET"
-                    doInput = true
+            val commandUrl = "https://www.googleapis.com/youtube/v3/search"
+            val token = "Bearer $accessToken"
+            val connector: HttpsURLConnection = URL(commandUrl).openConnection() as HttpsURLConnection
+            connector.apply {
+                readTimeout = 5000
+                requestMethod = "GET"
+                doInput = true
 //                    doOutput = true
-                    setRequestProperty("Authorization", token)
-                    setRequestProperty("user-agent", "HttpURLConnection/1.0.0")
-                }
-                Log.d(TAG, "processCommand3() URL = [$commandUrl]")
-                Log.d(TAG, "processCommand3() header = [${connector.requestProperties}]")
-                val content = StringBuilder()
-                val resCode = connector.responseCode
-                if (resCode == HttpsURLConnection.HTTP_OK) {
-                    val reader = BufferedReader(InputStreamReader(connector.inputStream))
-                    while (true) {
-                        val data = reader.readLine() ?: break
-                        content.append(data)
-                    }
-                    reader.close()
-                    connector.disconnect()
-                } else {
-                    Log.e(TAG, "processCommand3() resCode [$resCode][${connector.responseMessage}]")
-                    connector.disconnect()
-                    throw Exception("response code[$resCode]")
-                }
-
-                Log.d(TAG, "processCommand3() response = [${content}]")
-            } catch (e: Exception) {
-                Log.e(TAG, "processCommand3() Exception [${e.localizedMessage}]")
+                setRequestProperty("Authorization", token)
+                setRequestProperty("user-agent", "HttpURLConnection/1.0.0")
             }
+            Log.d(TAG, "processCommand3() URL = [$commandUrl]")
+            Log.d(TAG, "processCommand3() header = [${connector.requestProperties}]")
+            val content = StringBuilder()
+            val resCode = connector.responseCode
+            if (resCode == HttpsURLConnection.HTTP_OK) {
+                val reader = BufferedReader(InputStreamReader(connector.inputStream))
+                while (true) {
+                    val data = reader.readLine() ?: break
+                    content.append(data)
+                }
+                reader.close()
+                connector.disconnect()
+            } else {
+                Log.e(TAG, "processCommand3() resCode [$resCode][${connector.responseMessage}]")
+                connector.disconnect()
+                throw Exception("response code[$resCode]")
+            }
+
+            Log.d(TAG, "processCommand3() response = [${content}]")
+        } catch (e: Exception) {
+            Log.e(TAG, "processCommand3() Exception [${e.localizedMessage}]")
         }
     }
 
@@ -256,9 +249,15 @@ class DashboardFragment : Fragment() {
             dashboardViewModel.text.observe(viewLifecycleOwner, Observer {
                 textStatus.text = it
             })
-            button1.setOnClickListener { processCommand1() }
-            button2.setOnClickListener { processCommand2() }
-            button3.setOnClickListener { processCommand3() }
+            button1.setOnClickListener {
+                scope.launch(Dispatchers.IO) { processCommand1() }
+            }
+            button2.setOnClickListener {
+                scope.launch(Dispatchers.IO) { processCommand2() }
+            }
+            button3.setOnClickListener {
+                scope.launch(Dispatchers.IO) { processCommand3() }
+            }
         }
         return binding.root
     }
