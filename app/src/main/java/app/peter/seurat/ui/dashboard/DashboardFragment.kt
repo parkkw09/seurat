@@ -14,7 +14,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import app.peter.seurat.CustomScope
 import app.peter.seurat.R
+import app.peter.seurat.Util
 import app.peter.seurat.databinding.FragmentDashboardBinding
+import app.peter.seurat.model.Playlist
+import app.peter.seurat.model.PlaylistItem
+import app.peter.seurat.model.Subscription
+import app.peter.seurat.model.YoutubeResponse
 import com.google.android.gms.auth.UserRecoverableAuthException
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -24,6 +29,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -66,6 +73,10 @@ class DashboardFragment : Fragment() {
 
     private var accessToken: String? = null
     private var idToken: String? = null
+
+    private var channelIdBySubscription: String? = null
+    private var idByPlaylist: String? = null
+    private var videoIdByPlaylistItems: String? = null
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
@@ -156,6 +167,13 @@ class DashboardFragment : Fragment() {
             }
 
             Log.d(TAG, "processCommand1() response = [${content}]")
+            val response = run {
+                Gson().fromJson<YoutubeResponse<Subscription>>(
+                    content.toString(),
+                    TypeToken.getParameterized(YoutubeResponse::class.java, Subscription::class.java).type)
+            }
+            Log.d(TAG, "processCommand1() response json = [${Util.toPrettyFormat(response)}]")
+            channelIdBySubscription = response.items.first().snippet.resourceId.channelId
         } catch (e: Exception) {
             Log.e(TAG, "processCommand1() Exception [${e.localizedMessage}]")
         }
@@ -163,8 +181,12 @@ class DashboardFragment : Fragment() {
 
     private fun processCommand2() {
         Log.d(TAG, "processCommand2()")
+        if (channelIdBySubscription.isNullOrEmpty()) {
+            Log.d(TAG, "processCommand2() channelId Nothing")
+            return
+        }
         try {
-            val commandUrl = "https://www.googleapis.com/youtube/v3/search"
+            val commandUrl = "https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=${channelIdBySubscription ?: ""}"
             val token = "Bearer $accessToken"
             val connector: HttpsURLConnection = URL(commandUrl).openConnection() as HttpsURLConnection
             connector.apply {
@@ -193,17 +215,28 @@ class DashboardFragment : Fragment() {
             }
 
             Log.d(TAG, "processCommand2() response = [${content}]")
+            val response = run {
+                Gson().fromJson<YoutubeResponse<Playlist>>(
+                    content.toString(),
+                    TypeToken.getParameterized(YoutubeResponse::class.java, Playlist::class.java).type)
+            }
+            Log.d(TAG, "processCommand2() response json = [${Util.toPrettyFormat(response)}]")
+            idByPlaylist = response.items[1].id
         } catch (e: Exception) {
             Log.e(TAG, "processCommand2() Exception [${e.localizedMessage}]")
         }
 
     }
 
+    // paging 이 필요함.
     private fun processCommand3() {
         Log.d(TAG, "processCommand3()")
+        if (idByPlaylist.isNullOrEmpty()) {
+            Log.d(TAG, "processCommand3() Playlist id Nothing")
+            return
+        }
         try {
-//                val commandUrl = "https://www.googleapis.com/youtube/v3/subscriptions/list?part=id"
-            val commandUrl = "https://www.googleapis.com/youtube/v3/search"
+            val commandUrl = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${idByPlaylist ?: ""}"
             val token = "Bearer $accessToken"
             val connector: HttpsURLConnection = URL(commandUrl).openConnection() as HttpsURLConnection
             connector.apply {
@@ -233,6 +266,13 @@ class DashboardFragment : Fragment() {
             }
 
             Log.d(TAG, "processCommand3() response = [${content}]")
+            val response = run {
+                Gson().fromJson<YoutubeResponse<PlaylistItem>>(
+                    content.toString(),
+                    TypeToken.getParameterized(YoutubeResponse::class.java, PlaylistItem::class.java).type)
+            }
+            Log.d(TAG, "processCommand3() response json = [${Util.toPrettyFormat(response)}]")
+            videoIdByPlaylistItems = response.items.first().snippet.resourceId.videoId
         } catch (e: Exception) {
             Log.e(TAG, "processCommand3() Exception [${e.localizedMessage}]")
         }
@@ -246,17 +286,32 @@ class DashboardFragment : Fragment() {
         dashboardViewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
         val binding = FragmentDashboardBinding.inflate(inflater, container, false)
         binding.apply {
-            dashboardViewModel.text.observe(viewLifecycleOwner, Observer {
+            dashboardViewModel.text.observe(viewLifecycleOwner) {
                 textStatus.text = it
-            })
+            }
             button1.setOnClickListener {
-                scope.launch(Dispatchers.IO) { processCommand1() }
+                scope.launch(Dispatchers.IO) {
+                    processCommand1()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), channelIdBySubscription ?: "NOTHING", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
             button2.setOnClickListener {
-                scope.launch(Dispatchers.IO) { processCommand2() }
+                scope.launch(Dispatchers.IO) {
+                    processCommand2()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), idByPlaylist ?: "NOTHING", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
             button3.setOnClickListener {
-                scope.launch(Dispatchers.IO) { processCommand3() }
+                scope.launch(Dispatchers.IO) {
+                    processCommand3()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), videoIdByPlaylistItems ?: "NOTHING", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
         return binding.root
