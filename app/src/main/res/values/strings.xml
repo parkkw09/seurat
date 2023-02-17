@@ -4,10 +4,14 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
-    <string name="command_1">CMD1</string>
-    <string name="command_2">CMD2</string>
-    <string name="command_3">CMD3</string>
+    <string name="command_1">GET SUBSCRIPTION INFO</string>
+    <string name="command_2">GET PLAYLIST ID</string>
+    <string name="command_3">GET VIDEO ID</string>
+    <string name="command_4">PLAY VIDEO</string>
 
     <string name="server_client_id" translatable="false" >13440966619-2v14mi9n4qc0irjdh184d15ctjc9pur2.apps.googleusercontent.com</string>
     <string name="googe_api_key" translatable="false" >AIzaSyB5k24Ui6hZwqF3g83cltSrKDPJZk4TB_k</string>
+
+    <string name="media_url_mp4" translatable="false" >https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4</string>
+    <string name="media_url_dash" translatable="false" ><![CDATA[https://www.youtube.com/api/manifest/dash/id/bf5bb2419360daf1/source/youtube?as=fmp4_audio_clear,fmp4_sd_hd_clear&sparams=ip,ipbits,expire,source,id,as&ip=0.0.0.0&ipbits=0&expire=19000000000&signature=51AF5F39AB0CEC3E5497CD9C900EBFEAECCCB5C7.8506521BFC350652163895D4C26DEE124209AA9E&key=ik0]]></string>
 </resources>

@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import app.peter.seurat.CustomScope
 import app.peter.seurat.R
@@ -20,6 +19,8 @@ import app.peter.seurat.model.Playlist
 import app.peter.seurat.model.PlaylistItem
 import app.peter.seurat.model.Subscription
 import app.peter.seurat.model.YoutubeResponse
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.gms.auth.UserRecoverableAuthException
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -42,11 +43,18 @@ import javax.net.ssl.HttpsURLConnection
 
 class DashboardFragment : Fragment() {
 
+    private var _binding: FragmentDashboardBinding? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     private lateinit var dashboardViewModel: DashboardViewModel
     private val scope = CustomScope()
 
     private var mGoogleSignInClient: GoogleSignInClient? = null
     private lateinit var credential: GoogleAccountCredential
+    private var player: ExoPlayer? = null
 
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         Log.d(TAG, "StartActivityForResult() res[${result.resultCode}]")
@@ -77,6 +85,10 @@ class DashboardFragment : Fragment() {
     private var channelIdBySubscription: String? = null
     private var idByPlaylist: String? = null
     private var videoIdByPlaylistItems: String? = null
+
+    private var playWhenReady = true
+    private var currentItem = 0
+    private var playbackPosition = 0L
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
@@ -133,6 +145,24 @@ class DashboardFragment : Fragment() {
                 OnCompleteListener<Void?> { dashboardViewModel.updateStatus("SignOut") })
         }
 
+    }
+
+    private fun initializePlayer() {
+        player = ExoPlayer.Builder(requireContext())
+            .build()
+            .also { exoPlayer ->
+                binding.videoPlayer.player = exoPlayer
+            }
+    }
+
+    private fun releasePlayer() {
+        player?.let { exoPlayer ->
+            playbackPosition = exoPlayer.currentPosition
+            currentItem = exoPlayer.currentMediaItemIndex
+            playWhenReady = exoPlayer.playWhenReady
+            exoPlayer.release()
+        }
+        player = null
     }
 
     private fun processCommand1() {
@@ -278,13 +308,28 @@ class DashboardFragment : Fragment() {
         }
     }
 
+    private fun processCommand4() {
+        Log.d(TAG, "processCommand4()")
+        if (videoIdByPlaylistItems.isNullOrEmpty()) {
+            Log.d(TAG, "processCommand3() Playlist id Nothing")
+            return
+        }
+        player?.let { exoPlayer ->
+            val mediaItem = MediaItem.fromUri(getString(R.string.media_url_mp4))
+            exoPlayer.setMediaItem(mediaItem)
+            exoPlayer.playWhenReady = playWhenReady
+            exoPlayer.seekTo(currentItem, playbackPosition)
+            exoPlayer.prepare()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         dashboardViewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
-        val binding = FragmentDashboardBinding.inflate(inflater, container, false)
+        _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         binding.apply {
             dashboardViewModel.text.observe(viewLifecycleOwner) {
                 textStatus.text = it
@@ -313,6 +358,9 @@ class DashboardFragment : Fragment() {
                     }
                 }
             }
+            button4.setOnClickListener {
+                processCommand4()
+            }
         }
         return binding.root
     }
@@ -321,6 +369,28 @@ class DashboardFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setup()
         login()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        initializePlayer()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (player == null) {
+            initializePlayer()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        releasePlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        releasePlayer()
     }
 
     companion object {
