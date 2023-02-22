@@ -20,7 +20,6 @@ import app.peter.seurat.model.PlaylistItem
 import app.peter.seurat.model.Subscription
 import app.peter.seurat.model.YoutubeResponse
 import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
 import com.google.android.gms.auth.UserRecoverableAuthException
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -29,6 +28,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.android.youtube.player.SeuratPlayerFragment
+import com.google.android.youtube.player.YouTubeInitializationResult
+import com.google.android.youtube.player.YouTubePlayer
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -48,6 +50,9 @@ class DashboardFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var videoContainer: SeuratPlayerFragment
+    private var bundle: Bundle = Bundle()
 
     private lateinit var dashboardViewModel: DashboardViewModel
     private val scope = CustomScope()
@@ -151,7 +156,7 @@ class DashboardFragment : Fragment() {
         player = ExoPlayer.Builder(requireContext())
             .build()
             .also { exoPlayer ->
-                binding.videoPlayer.player = exoPlayer
+//                binding.videoPlayer.player = exoPlayer
             }
     }
 
@@ -310,25 +315,40 @@ class DashboardFragment : Fragment() {
 
     private fun processCommand4() {
         Log.d(TAG, "processCommand4()")
-        if (videoIdByPlaylistItems.isNullOrEmpty()) {
-            Log.d(TAG, "processCommand3() Playlist id Nothing")
-            return
-        }
-        player?.let { exoPlayer ->
-            val mediaItem = MediaItem.fromUri(getString(R.string.media_url_mp4))
-            exoPlayer.setMediaItem(mediaItem)
-            exoPlayer.playWhenReady = playWhenReady
-            exoPlayer.seekTo(currentItem, playbackPosition)
-            exoPlayer.prepare()
-        }
+//        if (videoIdByPlaylistItems.isNullOrEmpty()) {
+//            Log.d(TAG, "processCommand3() Playlist id Nothing")
+//            return
+//        }
+//        player?.let { exoPlayer ->
+//            val mediaItem = MediaItem.fromUri(getString(R.string.media_url_mp4))
+//            exoPlayer.setMediaItem(mediaItem)
+//            exoPlayer.playWhenReady = playWhenReady
+//            exoPlayer.seekTo(currentItem, playbackPosition)
+//            exoPlayer.prepare()
+//        }
+        videoContainer.initializePlayer("YouTubePlayerView", object :
+            YouTubePlayer.OnInitializedListener {
+            override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
+                Log.d(TAG, "onInitializationSuccess()")
+                if (!wasRestored) {
+                    player?.cueVideo("Sat9tvi2smU")
+                }
+            }
+
+            override fun onInitializationFailure(provider: YouTubePlayer.Provider?, result: YouTubeInitializationResult?) {
+                Log.d(TAG, "onInitializationFailure() [${result?.name}]")
+                result?.getErrorDialog(requireActivity(), 1234)?.show()
+            }
+        }, bundle)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         dashboardViewModel = ViewModelProvider(this)[DashboardViewModel::class.java]
+        videoContainer = SeuratPlayerFragment()
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         binding.apply {
             dashboardViewModel.text.observe(viewLifecycleOwner) {
@@ -361,6 +381,10 @@ class DashboardFragment : Fragment() {
             button4.setOnClickListener {
                 processCommand4()
             }
+            this@DashboardFragment.childFragmentManager
+                .beginTransaction()
+                .replace(videoContainer.id, this@DashboardFragment.videoContainer)
+                .commitAllowingStateLoss()
         }
         return binding.root
     }
