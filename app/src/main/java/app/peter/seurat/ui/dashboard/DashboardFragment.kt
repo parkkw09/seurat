@@ -71,6 +71,7 @@ class DashboardFragment : Fragment() {
             handleSignInResult(task)
         } else if (result.resultCode == Activity.RESULT_CANCELED) {
             Log.d(TAG, "StartActivityForResult() CANCEL")
+            logout()
         }
     }
 
@@ -79,8 +80,10 @@ class DashboardFragment : Fragment() {
 
         if (result.resultCode == Activity.RESULT_OK) {
             Log.d(TAG, "StartActivityForResult() OK")
+            login()
         } else if (result.resultCode == Activity.RESULT_CANCELED) {
             Log.d(TAG, "StartActivityForResult() CANCEL")
+            logout()
         }
     }
 
@@ -115,7 +118,7 @@ class DashboardFragment : Fragment() {
                     }
                     catch (e: UserRecoverableAuthException) {
                         Log.d(TAG, "NEED PERMISSION[${e.message}]")
-                        startForPermissionResult.launch(requireActivity().intent)
+                        startForPermissionResult.launch(e.intent)
                     }
                 }
             }
@@ -315,10 +318,11 @@ class DashboardFragment : Fragment() {
 
     private fun processCommand4() {
         Log.d(TAG, "processCommand4()")
-//        if (videoIdByPlaylistItems.isNullOrEmpty()) {
-//            Log.d(TAG, "processCommand3() Playlist id Nothing")
-//            return
-//        }
+        if (videoIdByPlaylistItems.isNullOrEmpty()) {
+            Log.d(TAG, "processCommand3() Playlist id Nothing")
+            return
+        }
+
 //        player?.let { exoPlayer ->
 //            val mediaItem = MediaItem.fromUri(getString(R.string.media_url_mp4))
 //            exoPlayer.setMediaItem(mediaItem)
@@ -326,12 +330,14 @@ class DashboardFragment : Fragment() {
 //            exoPlayer.seekTo(currentItem, playbackPosition)
 //            exoPlayer.prepare()
 //        }
+
         videoContainer.initializePlayer("YouTubePlayerView", object :
             YouTubePlayer.OnInitializedListener {
             override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
                 Log.d(TAG, "onInitializationSuccess()")
                 if (!wasRestored) {
-                    player?.cueVideo("Sat9tvi2smU")
+//                    player?.cueVideo("Sat9tvi2smU")
+                    player?.cueVideo(videoIdByPlaylistItems)
                 }
             }
 
@@ -418,7 +424,7 @@ class DashboardFragment : Fragment() {
     }
 
     companion object {
-        const val TAG = "SEURAT"
+        const val TAG = "SEURAT_DashboardFragment"
         const val VALUE_SCOPE_YOUTUBE = "https://www.googleapis.com/auth/youtube"
     }
 }
