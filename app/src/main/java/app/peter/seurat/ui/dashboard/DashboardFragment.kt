@@ -397,6 +397,7 @@ class DashboardFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated() KEY [${getString(R.string.server_client_id)}]")
         setup()
         login()
     }
